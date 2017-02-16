@@ -28,7 +28,7 @@ void Node::setNext(Node* newNext) {
 }
 
 Node::~Node() {
-  delete data;
+  //delete data;
   next = NULL;
 }
 
