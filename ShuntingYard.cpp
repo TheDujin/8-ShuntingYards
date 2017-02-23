@@ -16,16 +16,6 @@ Node* peek(Node* & bottom);
 int main() {
 	char* input = new char[101];
 	Node* head = NULL;
-//	push(new Node('a'), head);
-//
-//	push(new Node('b'), head);
-//	push(new Node('c'), head);
-//	Node* current = head;
-//	while (current->getNext() != NULL) {
-//		cout << current->getData() << endl;
-//		current = current->getNext();
-//	}
-//	cout << current->getData() << endl;
 
 	cout << "Please input the infix expression with spaces between each token." << endl << "Input: ";
 	cin.get(input, 100);
@@ -34,35 +24,52 @@ int main() {
 	char* output = new char[101];
 	bool invalid = false;
 	for (int i = 0; i < strlen(input); i++) {
-		cout << input[i] << endl;
 		if (input[i] - '0' >= 0 && input[i] - '0' <= 9) {
 			output[counter] = input[i];
 			counter++;
 		}
 		else if (input[i] == '+' || input[i] == '-') {
-			cout << "AS" << endl;
+			while (peek(head) != NULL && (peek(head)->getData() == '^' || peek(head)->getData() == '*' || peek(head)->getData() == '/'
+					|| peek(head)->getData() == '+' || peek(head)->getData() == '-')) {
+							output[counter] = pop(head)->getData();
+							counter++;
+						}
+						push(new Node(input[i]), head);
 		}
 		else if (input[i] == '*' || input[i] == '/') {
-			cout << "MD" << endl;
+			while (peek(head) != NULL && (peek(head)->getData() == '^' || peek(head)->getData() == '*' || peek(head)->getData() == '/')) {
+				output[counter] = pop(head)->getData();
+				counter++;
+			}
+			push(new Node(input[i]), head);
 		}
 		else if (input[i] == '^') {
-			cout << "E" << endl;
+			push(new Node('^'), head);
 		}
 		else if (input[i] == '(') {
-			cout << "P" << endl;
+			push(new Node('('), head);
 		}
 		else if (input[i] == ')') {
-			cout << "P" << endl;
+			while (peek(head)->getData() != '(') {
+				output[counter] = pop(head)->getData();
+				counter++;
+			}
+			pop(head);
 		}
-		else if (input[i] != '\0' && input[i] != '\r'){
+		else if (input[i] != '\0' && input[i] != '\r' && input[i] != ' '){
 			cout << "Invalid input" << endl;
 			invalid = true;
 			i = strlen(input);
 		}
 
 	}
-	if (!invalid)
+	if (!invalid) {
+		while (peek(head) != NULL) {
+			output[counter] = pop(head)->getData();
+			counter++;
+		}
 		cout << output << endl;
+	}
 	return 0;
 }
 
@@ -80,7 +87,7 @@ Node* pop(Node* & bottom) {
 		if (current->getNext() != NULL) {
 			while (current->getNext()->getNext() != NULL)
 				current = current->getNext();
-			Node* temp = current->getNext();
+			temp = current->getNext();
 			current->setNext(NULL);
 		}
 		else {
